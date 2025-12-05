@@ -1,0 +1,303 @@
+
+
+/* ==================== ADMIN BACKGROUND ==================== */
+.admin-bg {
+    background: 
+        radial-gradient(ellipse at top left, rgba(239, 68, 68, 0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at bottom right, rgba(245, 158, 11, 0.08) 0%, transparent 50%),
+        var(--gradient-dark);
+}
+
+/* ==================== ADMIN CONTENT ==================== */
+.admin-content {
+    padding-top: 100px;
+    padding-bottom: 60px;
+}
+
+/* ==================== ADMIN STATUS CARD ==================== */
+.admin-status-card {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 60px 40px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-xl);
+    text-align: center;
+}
+
+.admin-status-card .status-icon {
+    font-size: 64px;
+    margin-bottom: 24px;
+}
+
+.admin-status-card h2 {
+    font-size: 24px;
+    margin-bottom: 12px;
+}
+
+.admin-status-card p {
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.admin-address {
+    font-family: monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    word-break: break-all;
+}
+
+.admin-address span {
+    color: var(--primary-light);
+}
+
+/* ==================== ADMIN DASHBOARD ==================== */
+.admin-dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* ==================== DASHBOARD CARDS ==================== */
+.dashboard-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+}
+
+.dashboard-card.full-width {
+    grid-column: 1 / -1;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.card-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.card-body {
+    padding: 24px;
+}
+
+.card-description {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+/* ==================== ELECTION STATUS CARD ==================== */
+.election-status-card {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+.election-badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.election-badge.waiting {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
+}
+
+.election-badge.active {
+    background: rgba(34, 197, 94, 0.1);
+    color: var(--success);
+}
+
+.election-badge.ended {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+}
+
+.status-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+
+.status-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.status-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* ==================== ACTION GRID ==================== */
+.action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+/* ==================== ADMIN FORMS ==================== */
+.admin-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.admin-form .form-group {
+    margin-bottom: 0;
+}
+
+/* ==================== DURATION PRESETS ==================== */
+.duration-presets {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.preset-btn {
+    padding: 8px 16px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-secondary);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.preset-btn:hover {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: var(--primary);
+    color: var(--primary-light);
+}
+
+/* ==================== CANDIDATES TABLE ==================== */
+.candidates-table-container {
+    overflow-x: auto;
+}
+
+.candidates-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.candidates-table th,
+.candidates-table td {
+    padding: 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.candidates-table th {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: var(--bg-tertiary);
+}
+
+.candidates-table td {
+    font-size: 14px;
+}
+
+.candidates-table tr:hover td {
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.candidates-table .empty-state {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-muted);
+}
+
+.candidate-photo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--bg-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.candidate-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.vote-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.vote-bar-track {
+    flex: 1;
+    height: 8px;
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.vote-bar-fill {
+    height: 100%;
+    background: var(--gradient-primary);
+    border-radius: 4px;
+    transition: width var(--transition-slow);
+}
+
+.vote-bar-percentage {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    min-width: 50px;
+    text-align: right;
+    color: var(--primary-light);
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 992px) {
+    .status-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .action-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .status-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .candidates-table th,
+    .candidates-table td {
+        padding: 12px 8px;
+        font-size: 13px;
+    }
+}

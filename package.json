@@ -1,0 +1,34 @@
+{
+  "name": "decentralized-voting-dapp",
+  "version": "1.0.0",
+  "description": "Ethereum Blockchain üzerinde Merkezi Olmayan Oylama Uygulaması",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js",
+    "compile": "npx hardhat compile",
+    "deploy": "npx hardhat run --network localhost scripts/deploy.js",
+    "deploy:volta": "npx hardhat run --network volta scripts/deploy.js",
+    "test": "npx hardhat test"
+  },
+  "keywords": [
+    "ethereum",
+    "blockchain",
+    "voting",
+    "dapp",
+    "solidity",
+    "web3",
+    "hardhat"
+  ],
+  "author": "VotingDApp Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "dotenv": "^16.3.1",
+    "ethers": "^6.9.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ethers": "^3.0.5",
+    "hardhat": "^2.19.0"
+  }
+}

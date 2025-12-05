@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Sayfa Bulunamadı</title>
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        .error-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 24px;
+        }
+        .error-content {
+            max-width: 500px;
+        }
+        .error-code {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 120px;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 24px;
+        }
+        .error-title {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+        .error-description {
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+    <div class="bg-pattern"></div>
+    
+    <div class="error-page">
+        <div class="error-content">
+            <div class="error-code">404</div>
+            <h1 class="error-title">Sayfa Bulunamadı</h1>
+            <p class="error-description">
+                Aradığınız sayfa mevcut değil veya taşınmış olabilir.
+            </p>
+            <a href="/" class="btn btn-primary">Ana Sayfaya Dön</a>
+        </div>
+    </div>
+</body>
+</html>

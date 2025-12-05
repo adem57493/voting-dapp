@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Admin Panel - VoteChain</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="bg-gradient admin-bg"></div>
+    <div class="bg-pattern"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon">🔐</div>
+                <div class="logo-text">
+                    <span class="logo-title">Admin Panel</span>
+                    <span class="logo-subtitle">VoteChain Management</span>
+                </div>
+            </div>
+            
+            <nav class="nav">
+                <a href="/" class="nav-link">Oylama</a>
+                <a href="/admin" class="nav-link active">Admin Panel</a>
+            </nav>
+            
+            <div class="wallet-section">
+                <div class="network-badge" id="networkBadge">
+                    <span class="network-dot"></span>
+                    <span class="network-name">Bağlantı Yok</span>
+                </div>
+                <button class="btn btn-primary" id="connectWallet">
+                    <span class="wallet-icon">🦊</span>
+                    <span class="wallet-text">Cüzdan Bağla</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content admin-content">
+        <div class="container">
+            <!-- Admin Status Card -->
+            <div class="admin-status-card" id="adminStatusCard">
+                <div class="status-icon">🔒</div>
+                <h2>Admin Yetkilendirmesi Gerekli</h2>
+                <p>Bu panele erişmek için kontrat sahibi cüzdanı ile bağlanmanız gerekiyor.</p>
+                <p class="admin-address">Admin Adresi: <span id="adminAddress">Yükleniyor...</span></p>
+            </div>
+
+            <!-- Admin Dashboard -->
+            <div class="admin-dashboard" id="adminDashboard" style="display: none;">
+                <!-- Election Status -->
+                <div class="dashboard-card election-status-card">
+                    <div class="card-header">
+                        <h3>📊 Seçim Durumu</h3>
+                        <span class="election-badge" id="electionBadge">Bekliyor</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="status-grid">
+                            <div class="status-item">
+                                <span class="status-label">Seçim Adı</span>
+                                <span class="status-value" id="electionName">-</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Aday Sayısı</span>
+                                <span class="status-value" id="candidateCount">0</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Kayıtlı Seçmen</span>
+                                <span class="status-value" id="voterCount">0</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-label">Toplam Oy</span>
+                                <span class="status-value" id="voteCount">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Cards Grid -->
+                <div class="action-grid">
+                    <!-- Add Candidate Card -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3>➕ Aday Ekle</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="addCandidateForm" class="admin-form">
+                                <div class="form-group">
+                                    <label for="candidateName">Aday Adı</label>
+                                    <input type="text" id="candidateName" placeholder="Örn: Ali Yılmaz" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="candidateParty">Parti</label>
+                                    <input type="text" id="candidateParty" placeholder="Örn: Bağımsız">
+                                </div>
+                                <div class="form-group">
+                                    <label for="candidateImage">Fotoğraf URL (opsiyonel)</label>
+                                    <input type="url" id="candidateImage" placeholder="https://...">
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block">
+                                    Aday Ekle
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Start Voting Card -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3>🚀 Oylamayı Başlat</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="startVotingForm" class="admin-form">
+                                <div class="form-group">
+                                    <label for="votingDuration">Süre (dakika)</label>
+                                    <input type="number" id="votingDuration" placeholder="60" min="1" value="60" required>
+                                </div>
+                                <div class="duration-presets">
+                                    <button type="button" class="preset-btn" data-minutes="30">30 dk</button>
+                                    <button type="button" class="preset-btn" data-minutes="60">1 saat</button>
+                                    <button type="button" class="preset-btn" data-minutes="1440">1 gün</button>
+                                    <button type="button" class="preset-btn" data-minutes="10080">1 hafta</button>
+                                </div>
+                                <button type="submit" class="btn btn-success btn-block" id="startVotingBtn">
+                                    Oylamayı Başlat
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- End Voting Card -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3>⏹️ Oylamayı Bitir</h3>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-description">Oylamayı manuel olarak sonlandırın. Bu işlem geri alınamaz.</p>
+                            <button class="btn btn-danger btn-block" id="endVotingBtn">
+                                Oylamayı Sonlandır
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Reset Election Card -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3>🔄 Seçimi Sıfırla</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="resetElectionForm" class="admin-form">
+                                <div class="form-group">
+                                    <label for="newElectionName">Yeni Seçim Adı</label>
+                                    <input type="text" id="newElectionName" placeholder="Yeni Seçim 2024" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="newElectionDesc">Açıklama</label>
+                                    <textarea id="newElectionDesc" placeholder="Seçim açıklaması..." rows="2"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-warning btn-block">
+                                    Seçimi Sıfırla
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Candidates List -->
+                <div class="dashboard-card full-width">
+                    <div class="card-header">
+                        <h3>📋 Aday Listesi</h3>
+                        <button class="btn btn-secondary btn-sm" id="refreshCandidates">
+                            🔄 Yenile
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="candidates-table-container">
+                            <table class="candidates-table" id="candidatesTable">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Fotoğraf</th>
+                                        <th>Aday Adı</th>
+                                        <th>Parti</th>
+                                        <th>Oy Sayısı</th>
+                                        <th>Oran</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="candidatesTableBody">
+                                    <tr>
+                                        <td colspan="6" class="empty-state">
+                                            Henüz aday eklenmedi
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="footer-logo">🗳️ VoteChain Admin</span>
+                    <p>Seçim Yönetim Paneli</p>
+                </div>
+                <div class="footer-blockchain">
+                    <span>Powered by</span>
+                    <span class="ethereum-badge">⟠ Ethereum</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Transaction Status Modal -->
+    <div class="modal-overlay" id="txModal">
+        <div class="modal">
+            <div class="modal-body tx-status">
+                <div class="tx-icon" id="txIcon">⏳</div>
+                <h3 id="txTitle">İşlem Bekleniyor</h3>
+                <p id="txMessage">Lütfen MetaMask'ta işlemi onaylayın...</p>
+                <div class="tx-hash" id="txHash" style="display: none;"></div>
+                <button class="btn btn-secondary" id="closeTxModal" style="display: none;">Kapat</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/web3Helper.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

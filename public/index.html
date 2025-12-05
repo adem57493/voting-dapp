@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decentralized Voting System</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/voting.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="bg-gradient"></div>
+    <div class="bg-pattern"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon">🗳️</div>
+                <div class="logo-text">
+                    <span class="logo-title">VoteChain</span>
+                    <span class="logo-subtitle">Decentralized Voting</span>
+                </div>
+            </div>
+            
+            <nav class="nav">
+                <a href="/" class="nav-link active">Oylama</a>
+                <a href="/admin" class="nav-link">Admin Panel</a>
+            </nav>
+            
+            <div class="wallet-section">
+                <div class="network-badge" id="networkBadge">
+                    <span class="network-dot"></span>
+                    <span class="network-name">Bağlantı Yok</span>
+                </div>
+                <button class="btn btn-primary" id="connectWallet">
+                    <span class="wallet-icon">🦊</span>
+                    <span class="wallet-text">Cüzdan Bağla</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Election Info Section -->
+        <section class="election-info">
+            <div class="container">
+                <div class="election-header">
+                    <div class="election-title-section">
+                        <h1 class="election-title" id="electionName">Seçim Yükleniyor...</h1>
+                        <p class="election-description" id="electionDescription">Blockchain tabanlı güvenli oylama sistemi</p>
+                    </div>
+                    
+                    <div class="election-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon">👥</div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="totalVoters">0</span>
+                                <span class="stat-label">Kayıtlı Seçmen</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">✅</div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="totalVotes">0</span>
+                                <span class="stat-label">Toplam Oy</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🏆</div>
+                            <div class="stat-info">
+                                <span class="stat-value" id="candidateCount">0</span>
+                                <span class="stat-label">Aday Sayısı</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Voting Timer -->
+                <div class="timer-section" id="timerSection">
+                    <div class="timer-card">
+                        <div class="timer-status" id="votingStatus">
+                            <span class="status-dot"></span>
+                            <span class="status-text">Durum Kontrol Ediliyor...</span>
+                        </div>
+                        <div class="timer-display" id="timerDisplay">
+                            <div class="time-unit">
+                                <span class="time-value" id="days">00</span>
+                                <span class="time-label">Gün</span>
+                            </div>
+                            <div class="time-separator">:</div>
+                            <div class="time-unit">
+                                <span class="time-value" id="hours">00</span>
+                                <span class="time-label">Saat</span>
+                            </div>
+                            <div class="time-separator">:</div>
+                            <div class="time-unit">
+                                <span class="time-value" id="minutes">00</span>
+                                <span class="time-label">Dakika</span>
+                            </div>
+                            <div class="time-separator">:</div>
+                            <div class="time-unit">
+                                <span class="time-value" id="seconds">00</span>
+                                <span class="time-label">Saniye</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Voter Registration Section -->
+        <section class="registration-section" id="registrationSection">
+            <div class="container">
+                <div class="registration-card">
+                    <div class="registration-icon">📝</div>
+                    <h2>Seçmen Kaydı</h2>
+                    <p>Oy kullanabilmek için önce seçmen olarak kayıt olmanız gerekiyor.</p>
+                    <button class="btn btn-primary btn-lg" id="registerBtn">
+                        Seçmen Olarak Kayıt Ol
+                    </button>
+                    <div class="registration-status" id="registrationStatus"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Candidates Section -->
+        <section class="candidates-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Adaylar</h2>
+                    <p class="section-subtitle">Oy vermek istediğiniz adayı seçin</p>
+                </div>
+                
+                <div class="candidates-grid" id="candidatesGrid">
+                    <!-- Candidates will be loaded here -->
+                    <div class="loading-state">
+                        <div class="loader"></div>
+                        <p>Adaylar yükleniyor...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section class="results-section" id="resultsSection" style="display: none;">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">🏆 Seçim Sonuçları</h2>
+                    <p class="section-subtitle">Oylama tamamlandı</p>
+                </div>
+                
+                <div class="winner-card" id="winnerCard">
+                    <!-- Winner will be shown here -->
+                </div>
+                
+                <div class="results-chart" id="resultsChart">
+                    <!-- Results chart will be rendered here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="footer-logo">🗳️ VoteChain</span>
+                    <p>Güvenli, şeffaf ve merkezi olmayan oylama sistemi</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">Nasıl Çalışır?</a>
+                    <a href="#" class="footer-link">SSS</a>
+                    <a href="#" class="footer-link">İletişim</a>
+                </div>
+                <div class="footer-blockchain">
+                    <span>Powered by</span>
+                    <span class="ethereum-badge">⟠ Ethereum</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <div class="modal-overlay" id="voteModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Oyunuzu Onaylayın</h3>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="vote-confirmation">
+                    <div class="selected-candidate" id="selectedCandidateInfo">
+                        <!-- Selected candidate info -->
+                    </div>
+                    <div class="vote-warning">
+                        <span class="warning-icon">⚠️</span>
+                        <p>Bu işlem blockchain'e kaydedilecek ve geri alınamaz!</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelVote">İptal</button>
+                <button class="btn btn-primary" id="confirmVote">Oyu Onayla</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction Status Modal -->
+    <div class="modal-overlay" id="txModal">
+        <div class="modal">
+            <div class="modal-body tx-status">
+                <div class="tx-icon" id="txIcon">⏳</div>
+                <h3 id="txTitle">İşlem Bekleniyor</h3>
+                <p id="txMessage">Lütfen MetaMask'ta işlemi onaylayın...</p>
+                <div class="tx-hash" id="txHash" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.ethers.io/lib/ethers-5.7.umd.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/web3Helper.js"></script>
+    <script src="js/voting.js"></script>
+</body>
+</html>

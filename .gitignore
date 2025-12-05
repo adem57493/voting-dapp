@@ -1,0 +1,12 @@
+.env
+
+
+# Dependencies
+node_modules/
+
+# Hardhat
+cache/
+artifacts/
+
+# Logs
+*.log
