@@ -1,10 +1,3 @@
-/**
- * ============================================
- * VOTING PAGE JAVASCRIPT
- * ============================================
- * Main voting functionality for voters
- */
-
 // State
 let electionStatus = null;
 let candidates = [];
@@ -14,44 +7,29 @@ let timerInterval = null;
 
 // DOM Elements
 const elements = {
-    // Header
     connectWallet: document.getElementById('connectWallet'),
     networkBadge: document.getElementById('networkBadge'),
-    
-    // Election Info
     electionName: document.getElementById('electionName'),
     electionDescription: document.getElementById('electionDescription'),
     totalVoters: document.getElementById('totalVoters'),
     totalVotes: document.getElementById('totalVotes'),
     candidateCount: document.getElementById('candidateCount'),
-    
-    // Timer
     votingStatus: document.getElementById('votingStatus'),
     days: document.getElementById('days'),
     hours: document.getElementById('hours'),
     minutes: document.getElementById('minutes'),
     seconds: document.getElementById('seconds'),
-    
-    // Registration
     registrationSection: document.getElementById('registrationSection'),
     registerBtn: document.getElementById('registerBtn'),
     registrationStatus: document.getElementById('registrationStatus'),
-    
-    // Candidates
     candidatesGrid: document.getElementById('candidatesGrid'),
-    
-    // Results
     resultsSection: document.getElementById('resultsSection'),
     winnerCard: document.getElementById('winnerCard'),
-    
-    // Modals
     voteModal: document.getElementById('voteModal'),
     selectedCandidateInfo: document.getElementById('selectedCandidateInfo'),
     confirmVote: document.getElementById('confirmVote'),
     cancelVote: document.getElementById('cancelVote'),
     closeModal: document.getElementById('closeModal'),
-    
-    // Transaction Modal
     txModal: document.getElementById('txModal'),
     txIcon: document.getElementById('txIcon'),
     txTitle: document.getElementById('txTitle'),
@@ -59,117 +37,91 @@ const elements = {
     txHash: document.getElementById('txHash')
 };
 
-// ==================== INITIALIZATION ====================
-
 async function init() {
-    console.log('🗳️ Initializing Voting DApp...');
+    console.log('🗳️ Initializing Voting DApp (Mock Mode)...');
     
-    // Load contract config
-    await loadContractConfig();
+    // Load saved data first
+    web3Helper.loadFromStorage();
     
-    // Setup event listeners
     setupEventListeners();
     
-    // Check if already connected
     const account = await web3Helper.getAccount();
     if (account) {
         await handleWalletConnected(account);
+    } else {
+        // Still load election data even without wallet
+        await loadElectionData();
     }
-    
-    // Load initial data (even without wallet for display)
-    await loadElectionData();
 }
 
 function setupEventListeners() {
-    // Connect wallet
     elements.connectWallet.addEventListener('click', connectWallet);
-    
-    // Register voter
     elements.registerBtn.addEventListener('click', registerVoter);
-    
-    // Vote modal
     elements.confirmVote.addEventListener('click', confirmVote);
     elements.cancelVote.addEventListener('click', closeVoteModal);
     elements.closeModal.addEventListener('click', closeVoteModal);
     
-    // Close modal on outside click
     elements.voteModal.addEventListener('click', (e) => {
         if (e.target === elements.voteModal) closeVoteModal();
     });
-    
-    // Web3 events
-    window.addEventListener('accountChanged', (e) => {
-        handleWalletConnected(e.detail.account);
-    });
-    
-    window.addEventListener('walletDisconnected', () => {
-        updateWalletUI(null);
-        voterStatus = null;
-    });
 }
-
-// ==================== WALLET FUNCTIONS ====================
 
 async function connectWallet() {
     try {
+        showTxModal('pending', 'Cüzdan Oluşturuluyor', 'Sahte cüzdan oluşturuluyor...');
+        
         const { account, chainId } = await web3Helper.connectWallet();
+        
+        closeTxModal();
         await handleWalletConnected(account);
+        
     } catch (error) {
         console.error('Failed to connect wallet:', error);
-        alert(error.message);
+        showTxModal('error', 'Bağlantı Hatası', error.message);
+        setTimeout(closeTxModal, 2000);
     }
 }
 
 async function handleWalletConnected(account) {
     updateWalletUI(account);
-    
-    // Initialize contract
     web3Helper.initContract();
-    
-    // Load voter status
     await loadVoterStatus();
-    
-    // Refresh data
     await loadElectionData();
 }
 
 function updateWalletUI(account) {
     if (account) {
         elements.connectWallet.innerHTML = `
-            <span class="wallet-icon">🦊</span>
+            <span class="wallet-icon">💰</span>
             <span class="wallet-text">${web3Helper.formatAddress(account)}</span>
         `;
+        elements.connectWallet.style.background = 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)';
         
         elements.networkBadge.classList.remove('disconnected');
         elements.networkBadge.querySelector('.network-name').textContent = 
             web3Helper.getNetworkName(web3Helper.chainId);
     } else {
         elements.connectWallet.innerHTML = `
-            <span class="wallet-icon">🦊</span>
-            <span class="wallet-text">Cüzdan Bağla</span>
+            <span class="wallet-icon">💰</span>
+            <span class="wallet-text">Cüzdan Oluştur</span>
         `;
+        elements.connectWallet.style.background = '';
         
         elements.networkBadge.classList.add('disconnected');
         elements.networkBadge.querySelector('.network-name').textContent = 'Bağlantı Yok';
     }
 }
 
-// ==================== DATA LOADING ====================
-
 async function loadElectionData() {
     try {
-        // Try to load from contract first, fallback to API
-        if (web3Helper.contract) {
-            electionStatus = await web3Helper.getElectionStatus();
-            candidates = await web3Helper.getAllCandidates();
-        } else {
-            // Load from API
-            const statusRes = await fetch(CONFIG.API.ELECTION_STATUS);
-            electionStatus = await statusRes.json();
-            
-            const candidatesRes = await fetch(CONFIG.API.CANDIDATES);
-            candidates = await candidatesRes.json();
-        }
+        // Reload from storage to get latest data
+        web3Helper.loadFromStorage();
+        
+        electionStatus = await web3Helper.getElectionStatus();
+        candidates = await web3Helper.getAllCandidates();
+        
+        console.log('Election Status:', electionStatus);
+        console.log('Candidates:', candidates);
         
         updateElectionUI();
         renderCandidates();
@@ -177,18 +129,11 @@ async function loadElectionData() {
         
     } catch (error) {
         console.error('Failed to load election data:', error);
-        elements.electionName.textContent = 'Veri Yüklenemedi';
-        elements.candidatesGrid.innerHTML = `
-            <div class="loading-state">
-                <p>❌ Blockchain bağlantısı kurulamadı</p>
-                <p>Lütfen MetaMask ile bağlanın</p>
-            </div>
-        `;
     }
 }
 
 async function loadVoterStatus() {
-    if (!web3Helper.contract || !web3Helper.account) return;
+    if (!web3Helper.account) return;
     
     try {
         voterStatus = await web3Helper.getVoterStatus();
@@ -198,21 +143,17 @@ async function loadVoterStatus() {
     }
 }
 
-// ==================== UI UPDATES ====================
-
 function updateElectionUI() {
     if (!electionStatus) return;
     
-    elements.electionName.textContent = electionStatus.name;
-    elements.electionDescription.textContent = electionStatus.description;
-    elements.totalVoters.textContent = electionStatus.voterCount;
-    elements.totalVotes.textContent = electionStatus.totalVotes;
-    elements.candidateCount.textContent = electionStatus.candidateCount;
+    elements.electionName.textContent = electionStatus.name || 'Genel Seçim 2024';
+    elements.electionDescription.textContent = electionStatus.description || 'Blockchain tabanlı güvenli oylama sistemi';
+    elements.totalVoters.textContent = electionStatus.voterCount || 0;
+    elements.totalVotes.textContent = electionStatus.totalVotes || 0;
+    elements.candidateCount.textContent = electionStatus.candidateCount || 0;
     
-    // Update voting status
     updateVotingStatus();
     
-    // Show results if ended
     if (electionStatus.ended) {
         showResults();
     }
@@ -220,7 +161,6 @@ function updateElectionUI() {
 
 function updateVotingStatus() {
     const statusEl = elements.votingStatus;
-    const statusDot = statusEl.querySelector('.status-dot');
     const statusText = statusEl.querySelector('.status-text');
     
     if (electionStatus.ended) {
@@ -238,19 +178,21 @@ function updateVotingStatus() {
 }
 
 function updateRegistrationUI() {
-    if (!voterStatus) {
+    if (!web3Helper.account) {
         elements.registrationSection.style.display = 'block';
+        elements.registerBtn.textContent = 'Önce Cüzdan Oluşturun';
+        elements.registerBtn.disabled = true;
         return;
     }
     
-    if (voterStatus.isRegistered) {
+    if (voterStatus && voterStatus.isRegistered) {
         elements.registrationSection.style.display = 'none';
     } else {
         elements.registrationSection.style.display = 'block';
+        elements.registerBtn.textContent = 'Seçmen Olarak Kayıt Ol';
+        elements.registerBtn.disabled = false;
     }
 }
-
-// ==================== TIMER ====================
 
 function startTimer() {
     if (timerInterval) clearInterval(timerInterval);
@@ -290,13 +232,12 @@ function updateTimer() {
     elements.seconds.textContent = String(seconds).padStart(2, '0');
 }
 
-// ==================== CANDIDATES ====================
-
 function renderCandidates() {
-    if (candidates.length === 0) {
+    if (!candidates || candidates.length === 0) {
         elements.candidatesGrid.innerHTML = `
             <div class="loading-state">
                 <p>Henüz aday eklenmedi</p>
+                <p style="font-size: 14px; margin-top: 8px;">Admin panelinden aday ekleyebilirsiniz</p>
             </div>
         `;
         return;
@@ -312,20 +253,21 @@ function renderCandidates() {
         const isVoted = voterStatus && voterStatus.hasVoted && 
                         voterStatus.votedCandidateId === candidate.id;
         
-        const canVote = voterStatus && voterStatus.isRegistered && 
+        const canVote = web3Helper.account && 
+                        voterStatus && voterStatus.isRegistered && 
                         !voterStatus.hasVoted && 
                         electionStatus && electionStatus.started && 
                         !electionStatus.ended;
         
-        const avatar = candidate.imageUrl || CONFIG.DEFAULT_AVATARS[index % CONFIG.DEFAULT_AVATARS.length];
+        const avatars = ['👤', '👨', '👩', '🧑', '👨‍💼', '👩‍💼', '🧔', '👱'];
+        const avatar = candidate.imageUrl || avatars[index % avatars.length];
         
         return `
-            <div class="candidate-card ${isVoted ? 'voted' : ''} ${!canVote && !electionStatus?.ended ? 'disabled' : ''}" 
-                 data-id="${candidate.id}">
+            <div class="candidate-card ${isVoted ? 'voted' : ''}" data-id="${candidate.id}">
                 <div class="candidate-image">
                     ${candidate.imageUrl 
                         ? `<img src="${candidate.imageUrl}" alt="${candidate.name}">`
-                        : avatar
+                        : `<span style="font-size: 48px;">${avatar}</span>`
                     }
                     <span class="candidate-rank">#${candidate.id}</span>
                 </div>
@@ -362,17 +304,15 @@ function renderCandidates() {
     }).join('');
 }
 
-// ==================== VOTING ====================
-
 function selectCandidate(candidateId) {
     selectedCandidate = candidates.find(c => c.id === candidateId);
     if (!selectedCandidate) return;
     
-    const avatar = selectedCandidate.imageUrl || 
-        CONFIG.DEFAULT_AVATARS[(candidateId - 1) % CONFIG.DEFAULT_AVATARS.length];
+    const avatars = ['👤', '👨', '👩', '🧑', '👨‍💼', '👩‍💼', '🧔', '👱'];
+    const avatar = selectedCandidate.imageUrl || avatars[(candidateId - 1) % avatars.length];
     
     elements.selectedCandidateInfo.innerHTML = `
-        <div class="candidate-avatar">${avatar}</div>
+        <div class="candidate-avatar" style="font-size: 48px;">${avatar}</div>
         <h4>${selectedCandidate.name}</h4>
         <p>${selectedCandidate.party || 'Bağımsız'}</p>
     `;
@@ -389,23 +329,21 @@ async function confirmVote() {
     if (!selectedCandidate) return;
     
     closeVoteModal();
-    showTxModal('pending', 'İşlem Bekleniyor', 'Lütfen MetaMask\'ta işlemi onaylayın...');
+    showTxModal('pending', 'İşlem Bekleniyor', 'Oy kaydediliyor...');
     
     try {
         const tx = await web3Helper.vote(selectedCandidate.id);
         
-        showTxModal('pending', 'İşlem Onaylanıyor', 'Blockchain\'de işlem onaylanıyor...');
+        showTxModal('pending', 'İşlem Onaylanıyor', 'Blok oluşturuluyor...');
         
-        const receipt = await tx.wait();
+        await tx.wait();
         
         showTxModal('success', 'Oy Kullanıldı! 🎉', 
             `${selectedCandidate.name} adayına oyunuz başarıyla kaydedildi.`);
         
-        // Reload data
         await loadVoterStatus();
         await loadElectionData();
         
-        // Auto close modal after 3 seconds
         setTimeout(closeTxModal, 3000);
         
     } catch (error) {
@@ -414,28 +352,25 @@ async function confirmVote() {
     }
 }
 
-// ==================== REGISTRATION ====================
-
 async function registerVoter() {
     if (!web3Helper.account) {
-        alert('Lütfen önce cüzdanınızı bağlayın');
+        alert('Lütfen önce cüzdan oluşturun');
         return;
     }
     
-    showTxModal('pending', 'Kayıt Yapılıyor', 'Lütfen MetaMask\'ta işlemi onaylayın...');
+    showTxModal('pending', 'Kayıt Yapılıyor', 'İşlem simüle ediliyor...');
     
     try {
         const tx = await web3Helper.registerVoter();
         
-        showTxModal('pending', 'İşlem Onaylanıyor', 'Blockchain\'de işlem onaylanıyor...');
+        showTxModal('pending', 'İşlem Onaylanıyor', 'Blok oluşturuluyor...');
         
         await tx.wait();
         
         showTxModal('success', 'Kayıt Başarılı! ✅', 'Artık oy kullanabilirsiniz.');
         
-        // Reload voter status
         await loadVoterStatus();
-        renderCandidates();
+        await loadElectionData();
         
         setTimeout(closeTxModal, 3000);
         
@@ -445,15 +380,11 @@ async function registerVoter() {
     }
 }
 
-// ==================== RESULTS ====================
-
 async function showResults() {
     elements.resultsSection.style.display = 'block';
     
     try {
-        const winner = web3Helper.contract 
-            ? await web3Helper.getWinner()
-            : await (await fetch(CONFIG.API.WINNER)).json();
+        const winner = await web3Helper.getWinner();
         
         elements.winnerCard.innerHTML = `
             <span class="winner-badge">🏆 Kazanan</span>
@@ -464,8 +395,6 @@ async function showResults() {
         console.error('Failed to load winner:', error);
     }
 }
-
-// ==================== TRANSACTION MODAL ====================
 
 function showTxModal(status, title, message) {
     const icons = {
@@ -490,8 +419,6 @@ function closeTxModal() {
     elements.txModal.classList.remove('active');
 }
 
-// Make functions available globally
 window.selectCandidate = selectCandidate;
 
-// Initialize on load
 document.addEventListener('DOMContentLoaded', init);
